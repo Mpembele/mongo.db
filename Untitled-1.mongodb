@@ -1,0 +1,88 @@
+
+//- Busque filmes de 2001 ou que comecem com a letra D.
+use('projeto1')
+db.filmes.find(
+  {ano:'2001'}
+  )
+
+
+//Busque filmes lançados dirigidos pelo Peter Jackson usando $in.
+use('projeto1')
+db.filmes.find(
+  {diretor:{$in:['Peter Jackson','Walter Salles']}}
+  )  
+
+
+//Busque filmes lançados entre 1997 e 2004.
+use('projeto1')
+db.filmes.find(
+  {ano:{ $gt:'1997', $lte:'2004'}}
+  )  
+
+
+//- Busque filmes lançados entre 2002 e 2021 e que contenham as atrizes Naomi Watts ou Carey Mulligan.
+/*use('projeto1')
+db.filmes.find(
+  {ano:{ $gt:'2002', $lte:'2021'}, {$text:{$search:"Naomi Watts","Carey Mulligan"}}}
+  ) 
+
+use('projeto1')
+db.filmes.find(
+  {elenco:{$in:['Neve Campbell','Courtney Cox','David Arquette']}}
+  )*/
+
+
+//Busque todos os filmes que não sejam entre 2001 e 2005.
+use('projeto1')
+db.filmes.find(
+  {ano:{$nin:['2001','2005']}}
+  )  
+
+
+//Crie uma index usando o ano como referência.
+use('projeto1')
+db.filmes.createIndex(
+  {ano:'text'}
+)
+
+
+//- Some os prêmios de todos os filmes. infelzmente não consegui rodar no Vs-code(CMD_NOT_ALLOWED: mapReduce)
+var mapFunction1 = function() {
+    emit(this.name, this.prêmios)
+};
+var reduceFunction1 = function(nome,prêmios) {
+    return Arrey.sum(prêmios)
+};
+
+db.filmes.mapReduce(mapFunction1, reduceFunction1, {out: 'resultado dos premios'});
+
+//Na coleção `sample_mflix` do Mongo Atlas DB, crie uma consulta que retorne os filmes com os seus comentários utilizando o estágio de agrupamento (e.g.: `$lookup`). db.movies.find().pretty(
+
+use('sample_mflix')
+db.movies.aggregate([{
+    $lookup: {
+        from: 'title',
+        localField: 'plot',
+        foreignField: 'fullplot',
+        as: 'dados'
+    }
+}]).pretty()
+
+
+//Selecione os filmes lançados em 2001, apresentando seu nome e diretor apenas, em ordem decrescente,
+
+use('projeto1')
+db.filmes.aggregate([{
+    $match: {ano: 2001}},
+    {$project: {
+        title:2, directors: 2
+    }},
+    {$sort: {title:1}},
+    {$limit: 2}
+    ]).pretty()
+
+
+
+
+  
+
